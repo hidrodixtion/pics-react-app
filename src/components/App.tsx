@@ -1,13 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import SearchBar from './SearchBar';
 import { Col, Container, Row } from 'react-bootstrap';
 import Constants from '../utils/Constants';
 import Unsplash from '../api/Unsplash'
+import ImageList from './ImageList'
+import { ImageModel } from '../model/ImageModel';
 
 interface MyState {
-  images: any[]
+  images: ImageModel[]
 }
 
 class App extends React.Component<{}, MyState> {
@@ -23,7 +24,10 @@ class App extends React.Component<{}, MyState> {
         query: term
       }
     })
-    this.setState({images: response.data.results})
+    let images = response.data.results.map((result: any): ImageModel => {
+      return ({id: result.id, description: result.description, url: result.urls.regular})
+    })
+    this.setState({images: images})
   }
 
   render() {
@@ -33,6 +37,7 @@ class App extends React.Component<{}, MyState> {
           <Col>
             <SearchBar onSubmit={this.onSearchSubmit}/>
             <div>Found {this.state.images.length} images</div>
+            <ImageList images={this.state.images}/>
           </Col>
         </Row>
       </Container>
